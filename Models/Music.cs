@@ -25,6 +25,16 @@ public class Music
     // Static extent collection to store all Music objects
     public static List<Music> MusicList = new List<Music>();
 
+    // Private static method to add a Music object to the extent, with validation
+    private static void AddMusic(Music music)
+    {
+        if (music == null)
+        {
+            throw new ArgumentException("Music cannot be null.");
+        }
+        MusicList.Add(music);
+    }
+
     // Save all music using PersistenceManager
     public static void SaveMusic()
     {
