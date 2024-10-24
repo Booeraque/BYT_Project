@@ -3,19 +3,36 @@ using System.Collections.Generic;
 
 public class Tag
 {
-    public int TagID { get; set; }
-    public string Category { get; set; }
+    private int _tagID;
+    public int TagID
+    {
+        get => _tagID;
+        set
+        {
+            if (value <= 0) throw new ArgumentException("TagID must be positive.");
+            _tagID = value;
+        }
+    }
+
+    private string _category;
+    public string Category
+    {
+        get => _category;
+        set
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Category can't be empty.");
+            _category = value;
+        }
+    }
 
     // Static extent collection to store all Tag objects
     public static List<Tag> Tags = new List<Tag>();
 
-    // Save all tags using PersistenceManager
     public static void SaveTags()
     {
         PersistenceManager.SaveExtent(Tags, "Tags.xml");
     }
 
-    // Load all tags using PersistenceManager
     public static void LoadTags()
     {
         Tags = PersistenceManager.LoadExtent<Tag>("Tags.xml");
