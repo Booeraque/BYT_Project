@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class Group
 {
+    // Mandatory attribute: GroupID
     private int _groupID;
     public int GroupID
     {
@@ -14,6 +15,7 @@ public class Group
         }
     }
 
+    // Mandatory attribute: GroupName
     private string _groupName;
     public string GroupName
     {
@@ -25,6 +27,7 @@ public class Group
         }
     }
 
+    // Mandatory attribute: Description
     private string _description;
     public string Description
     {
@@ -36,16 +39,45 @@ public class Group
         }
     }
 
-    // Static extent collection to store all Group objects
-    public static List<Group> Groups = new List<Group>();
+    // Private static extent collection to store all Group objects
+    private static List<Group> groupsExtent = new List<Group>();
 
-    public static void SaveGroups()
+    // Private static method to add a Group to the extent, with validation
+    private static void AddGroup(Group group)
     {
-        PersistenceManager.SaveExtent(Groups, "Groups.xml");
+        if (group == null)
+        {
+            throw new ArgumentException("Group cannot be null.");
+        }
+        groupsExtent.Add(group);
     }
 
+    // Public static method to get a read-only copy of the extent
+    public static IReadOnlyList<Group> GetGroups()
+    {
+        return groupsExtent.AsReadOnly();
+    }
+
+    // Constructor to initialize Group with mandatory attributes and automatically add to extent
+    public Group(int groupID, string groupName, string description)
+    {
+        GroupID = groupID;
+        GroupName = groupName;
+        Description = description;
+
+        // Automatically add to extent
+        AddGroup(this);
+    }
+
+    // Method to save all groups to XML (for persistence)
+    public static void SaveGroups()
+    {
+        PersistenceManager.SaveExtent(groupsExtent, "Groups.xml");
+    }
+
+    // Method to load all groups from XML (for persistence)
     public static void LoadGroups()
     {
-        Groups = PersistenceManager.LoadExtent<Group>("Groups.xml");
+        groupsExtent = PersistenceManager.LoadExtent<Group>("Groups.xml");
     }
 }

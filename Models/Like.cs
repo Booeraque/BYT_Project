@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class Like
 {
+    // Mandatory attribute: LikeID
     private int _likeID;
     public int LikeID
     {
@@ -14,6 +15,7 @@ public class Like
         }
     }
 
+    // Complex attribute: CreatedAt
     private DateTime _createdAt;
     public DateTime CreatedAt
     {
@@ -25,16 +27,44 @@ public class Like
         }
     }
 
-    // Static extent collection to store all Like objects
-    public static List<Like> Likes = new List<Like>();
+    // Private static extent collection to store all Like objects
+    private static List<Like> likesExtent = new List<Like>();
 
-    public static void SaveLikes()
+    // Private static method to add a Like to the extent
+    private static void AddLike(Like like)
     {
-        PersistenceManager.SaveExtent(Likes, "Likes.xml");
+        if (like == null)
+        {
+            throw new ArgumentException("Like cannot be null.");
+        }
+        likesExtent.Add(like);
     }
 
+    // Public static method to get a read-only copy of the extent
+    public static IReadOnlyList<Like> GetLikes()
+    {
+        return likesExtent.AsReadOnly();
+    }
+
+    // Constructor to initialize Like object with mandatory attributes and automatically add to extent
+    public Like(int likeID, DateTime createdAt)
+    {
+        LikeID = likeID;
+        CreatedAt = createdAt;
+
+        // Automatically add to extent
+        AddLike(this);
+    }
+
+    // Method to save all likes to XML (for persistence)
+    public static void SaveLikes()
+    {
+        PersistenceManager.SaveExtent(likesExtent, "Likes.xml");
+    }
+
+    // Method to load all likes from XML (for persistence)
     public static void LoadLikes()
     {
-        Likes = PersistenceManager.LoadExtent<Like>("Likes.xml");
+        likesExtent = PersistenceManager.LoadExtent<Like>("Likes.xml");
     }
 }

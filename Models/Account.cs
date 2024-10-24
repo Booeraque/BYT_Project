@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class Account
 {
+    // Mandatory attribute: AccountID
     private int _accountID;
     public int AccountID
     {
@@ -14,6 +15,7 @@ public class Account
         }
     }
 
+    // Mandatory attribute: Username
     private string _username;
     public string Username
     {
@@ -25,6 +27,7 @@ public class Account
         }
     }
 
+    // Mandatory attribute: Email
     private string _email;
     public string Email
     {
@@ -36,6 +39,7 @@ public class Account
         }
     }
 
+    // Complex attribute: BirthDate (with encapsulation)
     private DateTime _birthDate;
     public DateTime BirthDate
     {
@@ -47,17 +51,20 @@ public class Account
         }
     }
 
-    private string _phone;
-    public string Phone
+    // Derived attribute: Age (based on BirthDate)
+    public int Age
     {
-        get => _phone;
-        set
+        get
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Phone number can't be empty.");
-            _phone = value;
+            if (BirthDate == DateTime.MinValue) throw new InvalidOperationException("BirthDate must be set before calculating age.");
+            var today = DateTime.Today;
+            var age = today.Year - BirthDate.Year;
+            if (BirthDate.Date > today.AddYears(-age)) age--;  // Adjust if the birthday hasn't occurred yet this year.
+            return age;
         }
     }
 
+    // Mandatory attribute: Address
     private string _address;
     public string Address
     {
@@ -69,6 +76,7 @@ public class Account
         }
     }
 
+    // Mandatory attribute: Password
     private string _password;
     public string Password
     {
@@ -80,16 +88,48 @@ public class Account
         }
     }
 
-    // Static extent collection to store all Account objects
-    public static List<Account> Accounts = new List<Account>();
+    // Private static extent collection to store all Account objects
+    private static List<Account> accountsExtent = new List<Account>();
 
-    public static void SaveAccounts()
+    // Private static method to add an Account to the extent, with validation
+    private static void AddAccount(Account account)
     {
-        PersistenceManager.SaveExtent(Accounts, "Accounts.xml");
+        if (account == null)
+        {
+            throw new ArgumentException("Account cannot be null.");
+        }
+        accountsExtent.Add(account);
     }
 
+    // Public static method to get a read-only copy of the extent
+    public static IReadOnlyList<Account> GetAccounts()
+    {
+        return accountsExtent.AsReadOnly();
+    }
+
+    // Constructor to initialize Account object with mandatory attributes and automatically add to extent
+    public Account(int accountID, string username, string email, DateTime birthDate, string address, string password)
+    {
+        AccountID = accountID;
+        Username = username;
+        Email = email;
+        BirthDate = birthDate;
+        Address = address;
+        Password = password;
+
+        // Automatically add to extent
+        AddAccount(this);
+    }
+
+    // Method to save all accounts to XML (for persistence)
+    public static void SaveAccounts()
+    {
+        PersistenceManager.SaveExtent(accountsExtent, "Accounts.xml");
+    }
+
+    // Method to load all accounts from XML (for persistence)
     public static void LoadAccounts()
     {
-        Accounts = PersistenceManager.LoadExtent<Account>("Accounts.xml");
+        accountsExtent = PersistenceManager.LoadExtent<Account>("Accounts.xml");
     }
 }
