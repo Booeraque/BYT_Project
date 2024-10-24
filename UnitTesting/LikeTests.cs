@@ -7,27 +7,39 @@ public class LikeTests
     [Fact]
     public void LikeID_ShouldThrowException_WhenValueIsNonPositive()
     {
-        var like = new Like();
+        var like = new Like(1, DateTime.Now);
         Assert.Throws<ArgumentException>(() => like.LikeID = 0);
+    }
+
+    [Fact]
+    public void CreatedAt_ShouldThrowException_WhenValueIsInTheFuture()
+    {
+        var like = new Like(1, DateTime.Now);
+        Assert.Throws<ArgumentException>(() => like.CreatedAt = DateTime.Now.AddDays(1));
+    }
+    
+    [Fact]
+    public void AddLike_ShouldThrowException_WhenLikeIsNull()
+    {
+        Assert.Throws<ArgumentException>(() => Like.AddLike(null));
     }
 
     [Fact]
     public void SaveAndLoadLikes_ShouldPersistDataCorrectly()
     {
         // Arrange
-        var like1 = new Like { LikeID = 1, CreatedAt = DateTime.Now };
-        var like2 = new Like { LikeID = 2, CreatedAt = DateTime.Now };
-        Like.Likes.Add(like1);
-        Like.Likes.Add(like2);
+        var like1 = new Like(1, DateTime.Now);
+        var like2 = new Like(2, DateTime.Now);
 
         // Act
         Like.SaveLikes();
-        Like.Likes.Clear();
         Like.LoadLikes();
 
         // Assert
-        Assert.Equal(2, Like.Likes.Count);
-        Assert.Equal(1, Like.Likes[0].LikeID);
-        Assert.Equal(2, Like.Likes[1].LikeID);
+        var likes = Like.GetLikes();
+        Assert.Equal(2, likes.Count);
+        Assert.Equal(1, likes[0].LikeID);
+        Assert.Equal(2, likes[1].LikeID);
     }
+    
 }

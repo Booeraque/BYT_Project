@@ -7,29 +7,39 @@ public class UserTests
     [Fact]
     public void AccountID_ShouldThrowException_WhenValueIsNonPositive()
     {
-        var user = new User();
+        var user = new User(1, true);
         Assert.Throws<ArgumentException>(() => user.AccountID = 0);
+    }
+    
+    [Fact]
+    public void AddUser_ShouldThrowException_WhenUserIsNull()
+    {
+        Assert.Throws<ArgumentException>(() => User.AddUser(null));
+    }
+
+    [Fact]
+    public void UserConstructor_ShouldThrowException_WhenIsAdminIsNotProvided()
+    {
+        Assert.Throws<ArgumentException>(() => new User(1));
     }
 
     [Fact]
     public void SaveAndLoadUsers_ShouldPersistDataCorrectly()
     {
         // Arrange
-        var user1 = new User { AccountID = 1, IsAdmin = true };
-        var user2 = new User { AccountID = 2, IsAdmin = false };
-        User.Users.Add(user1);
-        User.Users.Add(user2);
+        var user1 = new User(1, true);
+        var user2 = new User(2, false);
 
         // Act
         User.SaveUsers();
-        User.Users.Clear();
         User.LoadUsers();
 
         // Assert
-        Assert.Equal(2, User.Users.Count);
-        Assert.Equal(1, User.Users[0].AccountID);
-        Assert.True(User.Users[0].IsAdmin);
-        Assert.Equal(2, User.Users[1].AccountID);
-        Assert.False(User.Users[1].IsAdmin);
+        var users = User.GetUsers();
+        Assert.Equal(2, users.Count);
+        Assert.Equal(1, users[0].AccountID);
+        Assert.True(users[0].IsAdmin);
+        Assert.Equal(2, users[1].AccountID);
+        Assert.False(users[1].IsAdmin);
     }
 }
