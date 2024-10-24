@@ -1,10 +1,26 @@
-using System;
-using System.Collections.Generic;
-
 public class Music
 {
-    public int MusicID { get; set; }
-    public string Description { get; set; }
+    private int _musicID;
+    public int MusicID
+    {
+        get => _musicID;
+        set
+        {
+            if (value <= 0) throw new ArgumentException("MusicID must be positive.");
+            _musicID = value;
+        }
+    }
+
+    private string _description;
+    public string Description
+    {
+        get => _description;
+        set
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("Description can't be empty.");
+            _description = value;
+        }
+    }
 
     // Static extent collection to store all Music objects
     public static List<Music> MusicList = new List<Music>();

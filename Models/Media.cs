@@ -1,10 +1,26 @@
-using System;
-using System.Collections.Generic;
-
 public class Media
 {
-    public int MediaID { get; set; }
-    public string MediaType { get; set; }
+    private int _mediaID;
+    public int MediaID
+    {
+        get => _mediaID;
+        set
+        {
+            if (value <= 0) throw new ArgumentException("MediaID must be positive.");
+            _mediaID = value;
+        }
+    }
+
+    private string _mediaType;
+    public string MediaType
+    {
+        get => _mediaType;
+        set
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentException("MediaType can't be empty.");
+            _mediaType = value;
+        }
+    }
 
     // Static extent collection to store all Media objects
     public static List<Media> MediaList = new List<Media>();
