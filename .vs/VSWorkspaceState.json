@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Data",
+    "\\Models"
   ],
+  "SelectedNode": "\\Models\\Like.cs",
   "PreviewInSolutionExplorer": false
 }

@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
+
 public class Media
 {
+    // Mandatory attribute: MediaID
     private int _mediaID;
     public int MediaID
     {
@@ -11,6 +15,7 @@ public class Media
         }
     }
 
+    // Mandatory attribute: MediaType
     private string _mediaType;
     public string MediaType
     {
@@ -22,18 +27,44 @@ public class Media
         }
     }
 
-    // Static extent collection to store all Media objects
-    public static List<Media> MediaList = new List<Media>();
+    // Private static extent collection to store all Media objects
+    private static List<Media> mediaExtent = new List<Media>();
 
-    // Save all media using PersistenceManager
-    public static void SaveMedia()
+    // Private static method to add a Media object to the extent, with validation
+    private static void AddMedia(Media media)
     {
-        PersistenceManager.SaveExtent(MediaList, "Media.xml");
+        if (media == null)
+        {
+            throw new ArgumentException("Media cannot be null.");
+        }
+        mediaExtent.Add(media);
     }
 
-    // Load all media using PersistenceManager
+    // Public static method to get a read-only copy of the extent
+    public static IReadOnlyList<Media> GetMediaList()
+    {
+        return mediaExtent.AsReadOnly();
+    }
+
+    // Constructor to initialize Media object with mandatory attributes and automatically add to extent
+    public Media(int mediaID, string mediaType)
+    {
+        MediaID = mediaID;
+        MediaType = mediaType;
+
+        // Automatically add to extent
+        AddMedia(this);
+    }
+
+    // Method to save all media to XML (for persistence)
+    public static void SaveMedia()
+    {
+        PersistenceManager.SaveExtent(mediaExtent, "Media.xml");
+    }
+
+    // Method to load all media from XML (for persistence)
     public static void LoadMedia()
     {
-        MediaList = PersistenceManager.LoadExtent<Media>("Media.xml");
+        mediaExtent = PersistenceManager.LoadExtent<Media>("Media.xml");
     }
 }
